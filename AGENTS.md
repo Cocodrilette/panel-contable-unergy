@@ -30,16 +30,16 @@ The project follows a **Glassmorphism / Apple-inspired** aesthetic. The goal is 
 
 ## 🔐 Authentication
 
-The application uses a simple but secure **Middleware-based Authentication** system.
+The application uses a simple but secure **Proxy-based Authentication** system (Next.js 16 standard).
 
 ### How it works:
 - **Shared Secret**: A master password is defined in `APP_PASSWORD` environment variable.
 - **Login**: Users must enter this password at `/login`. Success sets an HTTP-only `auth_token` cookie.
-- **Protection**: `src/middleware.ts` intercepts all requests. If the cookie is missing, it redirects to `/login`.
-- **Refactoring**: This system is designed to be easily replaced by a full Auth provider (like NextAuth or a custom DB) by simply updating the `/api/auth/login` logic and the middleware check.
+- **Protection**: `src/proxy.ts` (formerly `middleware.ts`) intercepts all requests. If the cookie is missing, it redirects to `/login`.
+- **Refactoring**: This system is designed to be easily replaced by a full Auth provider (like NextAuth or a custom DB) by simply updating the `/api/auth/login` logic and the proxy check.
 
 ### Important Notes:
-- API routes (except `/api/auth/*`) are also protected by the middleware.
+- API routes (except `/api/auth/*`) are also protected by the proxy.
 - Logout is handled by `/api/auth/logout` which clears the cookie.
 
 ## 🏗 Architecture & Data Flow
