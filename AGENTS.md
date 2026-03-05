@@ -28,6 +28,20 @@ The project follows a **Glassmorphism / Apple-inspired** aesthetic. The goal is 
     - **Example**: `sileo.success({ title: "Success", description: "Data loaded" })`.
 - **Linting/Formatting**: Biome (Run `npm run lint` and `npm run format`)
 
+## 🔐 Authentication
+
+The application uses a simple but secure **Middleware-based Authentication** system.
+
+### How it works:
+- **Shared Secret**: A master password is defined in `APP_PASSWORD` environment variable.
+- **Login**: Users must enter this password at `/login`. Success sets an HTTP-only `auth_token` cookie.
+- **Protection**: `src/middleware.ts` intercepts all requests. If the cookie is missing, it redirects to `/login`.
+- **Refactoring**: This system is designed to be easily replaced by a full Auth provider (like NextAuth or a custom DB) by simply updating the `/api/auth/login` logic and the middleware check.
+
+### Important Notes:
+- API routes (except `/api/auth/*`) are also protected by the middleware.
+- Logout is handled by `/api/auth/logout` which clears the cookie.
+
 ## 🏗 Architecture & Data Flow
 
 ### Data Management
