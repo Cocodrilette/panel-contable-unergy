@@ -110,11 +110,10 @@ export default async function handler(
       income: 5000, expenses: 3000, items: [], sheetExists: true,
       investors: ["Total", "Inversionista A"],
       projects: ["Total", "Proyecto Solar 1"],
-      projectMetrics: {
+      projectMetrics: { 
         capex: mockMetric(150000), energyIncome: mockMetric(4500),
         marketingCosts: mockMetric(800), monthlyUtility: mockMetric(3700),
-        roi: { value: 2.4, sourceRows: [] },
-        costs: mockMetric(1200), tir: { value: 0.05, sourceRows: [] }
+        roi: { value: 2.4, sourceRows: [] }, costs: mockMetric(0)
       }
     });
   }
@@ -182,13 +181,11 @@ export default async function handler(
     const marketingCosts = compute(get => get({ ...baseFilter, Concepto: "Comercialización" }));
     const monthlyUtility = compute(get => get({ ...baseFilter, Concepto: "Utilidad del proyecto por mes" }));
     const capex = compute(get => get({ ...baseFilter, Concepto: "Inversion Inicial" }));
-    const roi: MetricDetail = {
-      value: capex.value !== 0 ? ((monthlyUtility.value - capex.value) / capex.value) * 100 : 0,
-      sourceRows: [...monthlyUtility.sourceRows],
-    };
-    const tir: MetricDetail = {
-      value: computeIRR(capex.value, monthlyUtility.value, 360),
-      sourceRows: [...capex.sourceRows, ...monthlyUtility.sourceRows],
+    const roi = compute(get => get({ ...baseFilter, Concepto: "% Rendimiento de la Inversion" }));
+    const costs = compute(get => get({ ...baseFilter, "Documento contable": "Costos" }));
+    const monthlyUtility: MetricDetail = {
+      value: energyIncome.value - marketingCosts.value - costs.value,
+      sourceRows: [...energyIncome.sourceRows, ...marketingCosts.sourceRows, ...costs.sourceRows],
     };
 
     const items: Transaction[] = dataRows
