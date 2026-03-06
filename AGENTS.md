@@ -53,7 +53,18 @@ The application uses a simple but secure **Proxy-based Authentication** system (
     - **Dynamic Projects**: The project list is updated based on the selected investor to ensure only relevant projects are displayed.
 - **Caching Strategy**: 
     - Both investor and project lists are cached in `localStorage` (`cached_investors`, `cached_projects`).
-    - On mount, the UI renders the cached list while an background fetch updates it.
+    - UI element positions are cached in `localStorage` using keys like `pos-{element-id}`.
+
+## 🎨 UI/UX Features
+
+### Reactive Sortable Layout
+- **Library**: Uses `@dnd-kit/core` and `@dnd-kit/sortable` for a fluid, reactive experience.
+- **Logic**: Elements push each other and reorder automatically. Movement is restricted to the dashboard content area.
+- **Persistence**: The *order* of elements is saved to `localStorage` (`dashboard-order`).
+- **Implementation**: 
+    - `index.tsx` manages the list of component IDs.
+    - `SortableItem` (in `Draggable.tsx`) provides the context for each card.
+- **Refactoring Note**: To move to a database-backed layout, update the `handleDragEnd` in `index.tsx` to sync the new order array with an API.
 
 ## 📝 Coding Conventions
 
