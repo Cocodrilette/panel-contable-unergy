@@ -22,6 +22,7 @@ export interface ProjectMetrics {
   marketingCosts: MetricDetail;
   monthlyUtility: MetricDetail;
   roi: MetricDetail;
+  costs: MetricDetail;
 }
 
 export type SheetData = {

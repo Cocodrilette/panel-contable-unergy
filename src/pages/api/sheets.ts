@@ -91,9 +91,9 @@ export default async function handler(
       investors: ["Total", "Inversionista A"], 
       projects: ["Total", "Proyecto Solar 1"],
       projectMetrics: { 
-        capex: mockMetric(150000), energyIncome: mockMetric(4500), 
-        marketingCosts: mockMetric(800), monthlyUtility: mockMetric(3700), 
-        roi: { value: 2.4, sourceRows: [] } 
+        capex: mockMetric(150000), energyIncome: mockMetric(4500),
+        marketingCosts: mockMetric(800), monthlyUtility: mockMetric(3700),
+        roi: { value: 2.4, sourceRows: [] }, costs: mockMetric(0)
       }
     });
   }
@@ -115,7 +115,7 @@ export default async function handler(
 
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: `${month}!A1:Z500`,
+      range: `${month}!A1:Z10000`,
     });
 
     const allRows = (response.data.values as string[][]) || [];
@@ -124,7 +124,10 @@ export default async function handler(
     }
 
     const headers = allRows[0].map((h) => String(h).trim());
-    const dataRows = allRows.slice(1);
+    const conceptoIdx = headers.indexOf("Concepto");
+    const dataRows = allRows.slice(1).filter(row =>
+      conceptoIdx === -1 || String(row[conceptoIdx] || "").trim() !== "Valor a pagar"
+    );
 
     const investorIdx = headers.indexOf("Inversionista");
     const projectIdx = headers.indexOf("Proyecto");
@@ -151,17 +154,23 @@ export default async function handler(
 
     const energyIncome = compute(get => {
       const ingresos = get({ ...baseFilter, Concepto: /^Ingreso/ });
+      const redistribucion = get({ ...baseFilter, Concepto: "Redistribución de ingresos de acuerdo al Protocolo" });
       const despacho = get({ ...baseFilter, Concepto: "Despacho" });
+      const ventasBolsa = get({ ...baseFilter, Concepto: "Ventas en bolsa" });
       return {
-        value: ingresos.value + despacho.value,
-        sourceRows: [...ingresos.sourceRows, ...despacho.sourceRows]
+        value: ingresos.value + redistribucion.value + despacho.value + ventasBolsa.value,
+        sourceRows: [...ingresos.sourceRows, ...redistribucion.sourceRows, ...despacho.sourceRows, ...ventasBolsa.sourceRows]
       };
     });
 
-    const marketingCosts = compute(get => get({ ...baseFilter, Concepto: "Costos de comercialización" }));
-    const monthlyUtility = compute(get => get({ ...baseFilter, Concepto: "Utilidad del proyecto por mes" }));
+    const marketingCosts = compute(get => get({ ...baseFilter, Concepto: "Comercialización" }));
     const capex = compute(get => get({ ...baseFilter, Concepto: "Inversion Inicial" }));
     const roi = compute(get => get({ ...baseFilter, Concepto: "% Rendimiento de la Inversion" }));
+    const costs = compute(get => get({ ...baseFilter, "Documento contable": "Costos" }));
+    const monthlyUtility: MetricDetail = {
+      value: energyIncome.value - marketingCosts.value - costs.value,
+      sourceRows: [...energyIncome.sourceRows, ...marketingCosts.sourceRows, ...costs.sourceRows],
+    };
 
     const items: Transaction[] = dataRows
       .filter((row) => {
@@ -192,6 +201,7 @@ export default async function handler(
         marketingCosts,
         monthlyUtility,
         roi,
+        costs,
       },
     });
   } catch (error: unknown) {

@@ -35,6 +35,7 @@ const INITIAL_DATA: SheetData = {
     marketingCosts: { value: 0, sourceRows: [] },
     monthlyUtility: { value: 0, sourceRows: [] },
     roi: { value: 0, sourceRows: [] },
+    costs: { value: 0, sourceRows: [] },
   },
 };
 
