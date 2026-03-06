@@ -77,6 +77,9 @@ export default function MetricModal({
             <table className="w-full text-left border-collapse">
               <thead className="sticky top-0 bg-zinc-100 dark:bg-zinc-900 text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-[0.2em] border-b border-zinc-200 dark:border-zinc-800 z-20">
                 <tr>
+                  {detail.sourceRows.some((r) => r.inversionista) && (
+                    <th className="px-8 py-4">Inversionista</th>
+                  )}
                   <th className="px-8 py-4">Proyecto</th>
                   <th className="px-8 py-4">Concepto</th>
                   <th className="px-8 py-4 text-right">Valor</th>
@@ -88,6 +91,11 @@ export default function MetricModal({
                     key={`${row.proyecto}-${row.concepto}-${idx}`}
                     className="hover:bg-zinc-50 dark:hover:bg-zinc-900/80 transition-colors"
                   >
+                    {detail.sourceRows.some((r) => r.inversionista) && (
+                      <td className="px-8 py-4 font-medium text-zinc-500 dark:text-zinc-400">
+                        {row.inversionista || "—"}
+                      </td>
+                    )}
                     <td className="px-8 py-4 font-medium text-zinc-600 dark:text-zinc-400">
                       {row.proyecto}
                     </td>
