@@ -40,9 +40,9 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
 
       {/* Sidebar Container Compacto */}
       <aside className={`
-        fixed top-3 left-3 bottom-3 z-50 w-60 
-        bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl
-        border border-white/40 dark:border-zinc-800/50 shadow-xl
+        fixed top-3 left-3 bottom-3 z-50 w-60
+        bg-gradient-to-b from-[#915BD8]/10 via-white/80 to-[#F6FF72]/10 dark:from-[#915BD8]/10 dark:via-zinc-900/90 dark:to-zinc-900/80 backdrop-blur-xl
+        border border-[#915BD8]/20 dark:border-zinc-800/50 shadow-xl shadow-[#915BD8]/10
         rounded-3xl transform transition-all duration-300 ease-in-out
         ${isOpen ? "translate-x-0" : "-translate-x-[110%] lg:translate-x-0"}
       `}>
@@ -50,10 +50,10 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
           {/* Logo / Header */}
           <div className="p-5 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="bg-blue-600 p-1.5 rounded-xl text-white shadow-md">
+              <div className="bg-[#915BD8] p-1.5 rounded-xl text-white shadow-md">
                 <Zap className="w-4 h-4 fill-current" />
               </div>
-              <span className="text-lg font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+              <span className="text-lg font-bold tracking-tight text-[#915BD8] dark:text-[#b07ee8]">
                 Unergy
               </span>
             </div>
@@ -75,7 +75,7 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                 className={`
                   flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-semibold transition-all
                   ${item.active 
-                    ? "bg-white dark:bg-zinc-800 text-blue-600 dark:text-blue-400 shadow-sm border border-white/50 dark:border-zinc-700/50" 
+                    ? "bg-[#915BD8] text-white shadow-md shadow-[#915BD8]/30 border border-[#915BD8]"
                     : "text-zinc-500 dark:text-zinc-400 hover:bg-white/40 dark:hover:bg-zinc-800/40 hover:text-zinc-900 dark:hover:text-zinc-200"}
                 `}
               >
@@ -89,7 +89,7 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
           <div className="p-3">
             <div className="p-3 bg-white/40 dark:bg-zinc-800/40 border border-white/50 dark:border-zinc-700/50 rounded-2xl backdrop-blur-md">
               <div className="flex items-center gap-2.5 mb-3">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-md">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#915BD8] to-[#6B3DB8] flex items-center justify-center text-white text-xs font-bold shadow-md">
                   JD
                 </div>
                 <div className="flex-1 overflow-hidden text-left">
