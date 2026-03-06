@@ -9,51 +9,66 @@ The project follows a **Glassmorphism / Apple-inspired** aesthetic. The goal is 
 ### UI Standards (Tailwind CSS)
 - **Glass Effect**: Use `bg-white/60` (Light) or `bg-zinc-900/60` (Dark) combined with `backdrop-blur-md` or `backdrop-blur-xl`.
 - **Borders**: Subtle borders are mandatory to define glass edges. Use `border-white/40` (Light) or `border-zinc-800/50` (Dark).
-- **Border Radius**: 
-    - Main Containers/Sidebar: `rounded-3xl`
-    - Buttons/Inputs/Small Cards: `rounded-xl` or `rounded-2xl`
-- **Shadows**: Use `shadow-lg` or `shadow-xl` for depth. Avoid harsh shadows.
-- **Color Palette**: 
-    - **Primary**: Blue-600 (`#2563eb`)
-    - **Neutral**: Zinc scale for dark mode, White/Zinc-100 for light mode.
-    - **Status**: Success (Green-600), Error (Red-500), Warning (Orange-500).
+- **Shadows**: Use `shadow-lg` or `shadow-xl`. Avoid harsh shadows.
+- **Color Palette**: Primary Blue-600 (`#2563eb`), Status colors (Green-600, Red-500, Orange-500).
 
 ## 🛠 Tech Stack
-- **Framework**: Next.js (Pages Router)
+- **Framework**: Next.js 16 (Pages Router)
 - **Language**: TypeScript (Strict typing required)
 - **Styling**: Tailwind CSS v4
 - **Icons**: Lucide React
-- **Notifications**: Sileo (Toast system). 
-    - **Usage**: Always pass an object with `title` and `description`.
-    - **Example**: `sileo.success({ title: "Success", description: "Data loaded" })`.
-- **Linting/Formatting**: Biome (Run `npm run lint` and `npm run format`)
+- **Notifications**: Sileo (Always pass an object with `title` and `description`).
+- **Drag & Drop**: `@dnd-kit` for the sortable dashboard layout.
+- **Linting/Formatting**: Biome (Run `npm run lint` and `npm run format`).
 
 ## 🔐 Authentication
-
-The application uses a simple but secure **Proxy-based Authentication** system (Next.js 16 standard).
-
-### How it works:
-- **Shared Secret**: A master password is defined in `APP_PASSWORD` environment variable.
-- **Login**: Users must enter this password at `/login`. Success sets an HTTP-only `auth_token` cookie.
-- **Protection**: `src/proxy.ts` (formerly `middleware.ts`) intercepts all requests. If the cookie is missing, it redirects to `/login`.
-- **Refactoring**: This system is designed to be easily replaced by a full Auth provider (like NextAuth or a custom DB) by simply updating the `/api/auth/login` logic and the proxy check.
-
-### Important Notes:
-- API routes (except `/api/auth/*`) are also protected by the proxy.
-- Logout is handled by `/api/auth/logout` which clears the cookie.
+The application uses a **Proxy-based Authentication** system (Next.js 16 standard).
+- **Shared Secret**: A master password defined in `APP_PASSWORD`.
+- **Logic**: Handled in `src/proxy.ts` and `src/pages/api/auth/*`.
+- **Session**: HTTP-only `auth_token` cookie.
 
 ## 🏗 Architecture & Data Flow
 
-### Data Management
+### 1. Data Management
 - **Centralized State**: All sheet data is managed via `SheetContext.tsx`.
-- **Consumer Hook**: Components MUST use `useSheet()` to access data, loading states, and filter setters.
-- **Multi-level Filtering**: 
-    - The API handles `investor` and `project` query parameters.
-    - **Logic**: Filters are cumulative. If `investor` is selected, metrics and transactions filter by that investor. If a specific `project` is also selected, it narrows down to that project within the investor's scope.
-    - **Dynamic Projects**: The project list is updated based on the selected investor to ensure only relevant projects are displayed.
-- **Caching Strategy**: 
-    - Both investor and project lists are cached in `localStorage` (`cached_investors`, `cached_projects`).
-    - UI element positions are cached in `localStorage` using keys like `pos-{element-id}`.
+- **Consumer Hook**: Components MUST use `useSheet()` to access data and filters.
+- **Caching**: Investor/Project lists and Dashboard order are cached in `localStorage`.
+
+### 2. Calculation Engine (Backend)
+- Located in `/src/pages/api/sheets.ts`.
+- **`compute` Utility**: Handles mathematical operations between cells using functional filters.
+- **Traceability**: Every metric returned includes `sourceRows` (Concepto, Valor, Proyecto) for auditing.
+- **Regex Support**: Filters support regular expressions (e.g., `/^Ingreso/`).
+
+### 3. Metric Customization Guide
+To add or modify a metric in the Project Summary:
+1.  Define the logic in the `compute` block in `/api/sheets.ts`.
+2.  Update the `ProjectMetrics` interface in `src/types/sheets.ts`.
+3.  Add the new metric to the `items` array in `ProjectSummary.tsx`.
+
+## 📁 Project Structure
+- `/src/components`: Modular UI blocks (Sidebar, Modal, Toolbar, etc.)
+- `/src/context`: `SheetContext` for global data state.
+- `/src/pages/api`: Backend logic (Auth and Google Sheets integration).
+- `/src/proxy.ts`: Network boundary and route protection.
+- `/src/types`: Shared TypeScript interfaces.
+
+## 📝 Coding & Naming Conventions
+1.  **Language**: 
+    - **Code**: All code (variables, functions, files) must be in **English**.
+    - **UI Labels**: All user-facing text and labels must be in **Spanish**.
+    - **Sheet Data**: Headers ("Concepto", "Inversionista", "Proyecto", "Total") are expected in **Spanish**.
+2.  **Safety**: 
+    - Never log sensitive environment variables.
+    - Always use `?? 0` or defensive checks when formatting numbers.
+3.  **Deployment (Vercel)**:
+    - **OpenSSL 3**: Private keys must be cleaned of escaped characters and quotes before initializing JWT.
+    - **Env Vars**: Required: `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_PRIVATE_KEY`, `SPREADSHEET_ID`, `APP_PASSWORD`.
+
+## 🚀 Efficiency Guidelines
+- **High Density**: Avoid excessive padding. Keep the layout compact and professional.
+- **Responsiveness**: Mobile-first. The sidebar becomes a drawer and the Toolbar stacks vertically.
+- **Stale-While-Revalidate**: Prefer showing cached data while new data is fetching to avoid empty states.
 
 ## 🎨 UI/UX Features
 
@@ -61,68 +76,9 @@ The application uses a simple but secure **Proxy-based Authentication** system (
 - **Library**: Uses `@dnd-kit/core` and `@dnd-kit/sortable` for a fluid, reactive experience.
 - **Logic**: Elements push each other and reorder automatically. Movement is restricted to the dashboard content area.
 - **Persistence**: The *order* of elements is saved to `localStorage` (`dashboard-order`).
-- **Implementation**: 
-    - `index.tsx` manages the list of component IDs.
-    - `SortableItem` (in `Draggable.tsx`) provides the context for each card.
-- **Refactoring Note**: To move to a database-backed layout, update the `handleDragEnd` in `index.tsx` to sync the new order array with an API.
-
-## 📝 Coding Conventions
 
 ### Component Best Practices
-1. **Modularity**: Extract logical UI blocks into `src/components/`. 
-   - *Example*: `ProjectSummary.tsx`, `TransactionsTable.tsx`.
+1. **Modularity**: Extract logical UI blocks into `src/components/`.
 2. **Independence**: Components should consume the `useSheet()` hook directly rather than receiving large data props (Prop Drilling).
 3. **Atomic Metrics**: Use small sub-components or render functions for repeated patterns like individual metric items.
-4. **Loading States**: Always implement skeleton loaders or shimmer effects within the component itself while `loading` is true.
-5. **Types**: Use shared types from `src/types/sheets.ts`.
-
-### Google Sheets Integration
-- **Backend**: `/src/pages/api/sheets.ts` handles all communication with the Google Sheets API.
-- **Compute Engine**: Use the `compute` utility for mathematical operations between multiple cells.
-    - **Usage**:
-      ```typescript
-      const val = compute(get => 
-        get({ Concepto: "A" }) + get({ Concepto: "B" }) - get({ Concepto: "C" })
-      );
-      ```
-    - **Benefits**: Clean, readable, and leverages JS math power directly.
-- **Authentication**: Service Account via `google-auth-library` using JWT object configuration.
-    - **Usage**:
-      ```typescript
-      const auth = new google.auth.JWT({
-        email,
-        key: privateKey.replace(/\\n/g, "\n"),
-        scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
-      });
-      ```
-- **Validation**: Every request must validate the existence of the requested sheet (tab) before processing data.
-- **Response Format**: 
-    ```typescript
-    {
-      income: number;
-      expenses: number;
-      items: Transaction[];
-      sheetExists: boolean;
-      projectMetrics?: ProjectMetrics;
-    }
-    ```
-
-### Frontend State Management
-- **Dashboard**: Uses `useCallback` for fetching to prevent unnecessary re-renders.
-- **Month Handling**: Sheet names are in Spanish (e.g., "Enero", "Febrero"). The UI must map these correctly to API queries.
-
-## 📝 Coding Conventions
-
-1. **Language**: 
-   - **Code**: English (Variables, functions, comments, file names).
-   - **UI Labels**: Spanish (To match the end-user's context and Sheet names).
-2. **Components**:
-   - Keep components modular. Large UI blocks in `index.tsx` should be moved to `/src/components` as they grow.
-   - Use Lucide icons consistently for visual cues.
-3. **Safety**:
-   - **NEVER** log or expose `GOOGLE_PRIVATE_KEY` or `GOOGLE_SERVICE_ACCOUNT_EMAIL`.
-   - Always handle `loading` and `error` states gracefully with visual feedback (skeletons, Sileo toasts).
-
-## 🚀 Efficiency Guidelines
-- **Compactness**: Avoid excessive padding. The layout should be "High Density" but readable.
-- **Responsiveness**: Mobile-first approach. Sidebar must transform into a drawer on small screens.
+4. **Modals & Portals**: ALWAYS use `createPortal(content, document.body)` for modals (e.g., `MetricModal.tsx`). This prevents CSS stacking context issues caused by `transform` properties in draggable/sortable parent elements.

@@ -1,5 +1,6 @@
 import { Table as TableIcon, X } from "lucide-react";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import type { MetricDetail } from "@/types/sheets";
 
 interface MetricModalProps {
@@ -15,19 +16,35 @@ export default function MetricModal({
   title,
   detail,
 }: MetricModalProps) {
-  if (!isOpen || !detail) return null;
+  const [mounted, setMounted] = useState(false);
 
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+  useEffect(() => {
+    setMounted(true);
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
+  if (!isOpen || !detail || !mounted) return null;
+
+  const modalContent = (
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+      {/* Botón invisible para cerrar al hacer clic fuera */}
       <button
         type="button"
-        aria-label="Cerrar modal"
-        className="absolute inset-0 bg-black/40 backdrop-blur-md transition-opacity cursor-default w-full h-full border-none"
+        className="absolute inset-0 w-full h-full cursor-default border-none"
         onClick={onClose}
+        aria-label="Cerrar modal"
       />
 
-      <div className="relative w-full max-w-2xl bg-white/90 dark:bg-zinc-900/90 backdrop-blur-2xl rounded-[2.5rem] border border-white/40 dark:border-zinc-800/50 shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
-        <div className="px-8 py-6 border-b border-zinc-200/50 dark:border-zinc-800/50 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-800/30">
+      <div className="relative w-full max-w-2xl bg-white dark:bg-zinc-950 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden animate-in zoom-in duration-300 flex flex-col max-h-[90vh]">
+        {/* Header Sólido */}
+        <div className="px-8 py-6 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-zinc-50 dark:bg-zinc-900 flex-shrink-0">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-500/10 rounded-xl text-blue-600">
               <TableIcon className="w-5 h-5" />
@@ -44,36 +61,37 @@ export default function MetricModal({
           <button
             type="button"
             onClick={onClose}
-            className="p-2 hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50 rounded-full transition-colors"
+            className="p-2 hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-full transition-colors text-zinc-500"
           >
-            <X className="w-5 h-5 text-zinc-500" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="p-0 max-h-[60vh] overflow-y-auto">
+        {/* Tabla sobre Fondo Sólido */}
+        <div className="flex-1 overflow-y-auto bg-white dark:bg-zinc-950">
           {detail.sourceRows.length === 0 ? (
             <div className="p-12 text-center text-zinc-500 text-sm">
               No hay filas asociadas a este cálculo.
             </div>
           ) : (
-            <table className="w-full text-left">
-              <thead className="sticky top-0 bg-zinc-50 dark:bg-zinc-800 text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] border-b border-zinc-200/50 dark:border-zinc-800/50">
+            <table className="w-full text-left border-collapse">
+              <thead className="sticky top-0 bg-zinc-100 dark:bg-zinc-900 text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-[0.2em] border-b border-zinc-200 dark:border-zinc-800 z-20">
                 <tr>
-                  <th className="px-8 py-4 uppercase">Proyecto</th>
-                  <th className="px-8 py-4 uppercase">Concepto</th>
-                  <th className="px-8 py-4 text-right uppercase">Valor</th>
+                  <th className="px-8 py-4">Proyecto</th>
+                  <th className="px-8 py-4">Concepto</th>
+                  <th className="px-8 py-4 text-right">Valor</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-200/30 dark:divide-zinc-800/30 text-xs">
+              <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800 text-xs">
                 {detail.sourceRows.map((row, idx) => (
                   <tr
                     key={`${row.proyecto}-${row.concepto}-${idx}`}
-                    className="hover:bg-blue-500/5 transition-colors"
+                    className="hover:bg-zinc-50 dark:hover:bg-zinc-900/80 transition-colors"
                   >
-                    <td className="px-8 py-4 font-medium text-zinc-500 dark:text-zinc-400">
+                    <td className="px-8 py-4 font-medium text-zinc-600 dark:text-zinc-400">
                       {row.proyecto}
                     </td>
-                    <td className="px-8 py-4 font-bold text-zinc-900 dark:text-zinc-50">
+                    <td className="px-8 py-4 font-bold text-zinc-900 dark:text-zinc-100">
                       {row.concepto}
                     </td>
                     <td className="px-8 py-4 text-right font-black text-blue-600 dark:text-blue-400">
@@ -90,8 +108,9 @@ export default function MetricModal({
           )}
         </div>
 
-        <div className="px-8 py-5 border-t border-zinc-200/50 dark:border-zinc-800/50 bg-zinc-50/30 dark:bg-zinc-800/20 flex justify-between items-center">
-          <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+        {/* Footer Sólido */}
+        <div className="px-8 py-5 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 flex-shrink-0 flex justify-between items-center">
+          <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
             Total calculado:
           </span>
           <span className="text-xl font-black text-zinc-900 dark:text-zinc-50">
@@ -105,4 +124,6 @@ export default function MetricModal({
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }
