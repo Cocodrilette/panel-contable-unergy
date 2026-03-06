@@ -114,7 +114,7 @@ export default async function handler(
         capex: mockMetric(150000), energyIncome: mockMetric(4500),
         marketingCosts: mockMetric(800), monthlyUtility: mockMetric(3700),
         roi: { value: 2.4, sourceRows: [] },
-        costs: mockMetric(1200)
+        costs: mockMetric(1200), tir: { value: 0.05, sourceRows: [] }
       }
     });
   }
