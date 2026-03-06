@@ -13,6 +13,7 @@ const findRowsAndValuesByFilters = (
   const targetIdx = headers.indexOf(targetHeader);
   const conceptoIdx = headers.indexOf("Concepto");
   const proyectoIdx = headers.indexOf("Proyecto");
+  const inversionistaIdx = headers.indexOf("Inversionista");
   
   if (targetIdx === -1) return { values: [0], sourceRows: [] };
 
@@ -43,6 +44,7 @@ const findRowsAndValuesByFilters = (
     sourceRows.push({
       proyecto: proyectoIdx !== -1 ? String(row[proyectoIdx] || "").trim() : "Consolidado",
       concepto: conceptoIdx !== -1 ? String(row[conceptoIdx] || "").trim() : "N/A",
+      inversionista: inversionistaIdx !== -1 ? String(row[inversionistaIdx] || "").trim() : undefined,
       valor: val
     });
 
@@ -164,6 +166,7 @@ export default async function handler(
     });
 
     const marketingCosts = compute(get => get({ ...baseFilter, Concepto: "Comercialización" }));
+    const monthlyUtility = compute(get => get({ ...baseFilter, Concepto: "Utilidad del proyecto por mes" }));
     const capex = compute(get => get({ ...baseFilter, Concepto: "Inversion Inicial" }));
     const roi = compute(get => get({ ...baseFilter, Concepto: "% Rendimiento de la Inversion" }));
     const costs = compute(get => get({ ...baseFilter, "Documento contable": "Costos" }));

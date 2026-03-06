@@ -9,6 +9,7 @@ export type SourceRow = {
   proyecto: string;
   concepto: string;
   valor: number;
+  inversionista?: string;
 };
 
 export type MetricDetail = {
