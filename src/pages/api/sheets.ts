@@ -166,8 +166,12 @@ export default async function handler(
     });
 
     const marketingCosts = compute(get => get({ ...baseFilter, Concepto: "Comercialización" }));
-    const monthlyUtility = compute(get => get({ ...baseFilter, Concepto: "Utilidad del proyecto por mes" }));
     const capex = compute(get => get({ ...baseFilter, Concepto: "Inversion Inicial" }));
+    const costs = compute(get => get({ ...baseFilter, "Documento contable": "Costos" }));
+    const monthlyUtility: MetricDetail = {
+      value: energyIncome.value - marketingCosts.value - costs.value,
+      sourceRows: [...energyIncome.sourceRows, ...marketingCosts.sourceRows, ...costs.sourceRows],
+    };
     const roi = compute(get => get({ ...baseFilter, Concepto: "% Rendimiento de la Inversion" }));
     const costs = compute(get => get({ ...baseFilter, "Documento contable": "Costos" }));
     const monthlyUtility: MetricDetail = {
