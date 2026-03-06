@@ -107,9 +107,9 @@ export default function ProjectSummary() {
   return (
     <>
       <div className="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-2xl rounded-3xl border border-white/40 dark:border-zinc-800/50 shadow-lg overflow-hidden">
-        <div className="px-6 py-3 border-b border-white/20 dark:border-zinc-800/30 flex items-center justify-between bg-white/20">
+        <div className="px-6 py-3 border-b border-[#915BD8]/20 dark:border-zinc-800/30 flex items-center justify-between bg-gradient-to-r from-[#915BD8]/15 via-white/5 to-[#F6FF72]/15 dark:from-[#915BD8]/20 dark:via-transparent dark:to-[#F6FF72]/5">
           <h2 className="text-sm font-bold flex items-center gap-2">
-            <BarChart3 className="w-4 h-4 text-blue-500" />
+            <BarChart3 className="w-4 h-4 text-[#915BD8]" />
             Resumen General
           </h2>
           <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">

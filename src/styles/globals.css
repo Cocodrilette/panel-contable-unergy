@@ -1,13 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #FDFAF7;
   --foreground: #171717;
+  --unergy-purple: #915BD8;
+  --unergy-oat: #FDFAF7;
+  --unergy-lemon: #F6FF72;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-unergy-purple: var(--unergy-purple);
+  --color-unergy-oat: var(--unergy-oat);
+  --color-unergy-lemon: var(--unergy-lemon);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

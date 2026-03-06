@@ -2,7 +2,7 @@ import { AlertCircle } from "lucide-react";
 import { useSheet } from "@/context/SheetContext";
 
 export default function SheetStatus() {
-  const { data, loading, error, selectedMonth } = useSheet();
+  const { data, loading, error, selectedMonths } = useSheet();
 
   if (error) {
     return (
@@ -21,7 +21,7 @@ export default function SheetStatus() {
         <p className="text-zinc-500 dark:text-zinc-400 max-w-sm text-center mt-1 text-sm font-medium">
           La pestaña{" "}
           <span className="text-zinc-900 dark:text-zinc-50 font-bold">
-            "{selectedMonth}"
+            "{selectedMonths.join(", ")}"
           </span>{" "}
           no existe.
         </p>

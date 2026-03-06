@@ -36,6 +36,7 @@ const INITIAL_DATA: SheetData = {
     monthlyUtility: { value: 0, sourceRows: [] },
     roi: { value: 0, sourceRows: [] },
     costs: { value: 0, sourceRows: [] },
+    tir: { value: 0, sourceRows: [] },
   },
 };
 

@@ -84,17 +84,24 @@ export default function Dashboard() {
 
   return (
     <SheetDataProvider>
-      <div className={`${geistSans.className} ${geistMono.className} min-h-screen bg-zinc-100 dark:bg-black text-zinc-900 dark:text-zinc-100 transition-colors`}>
+      <div className={`${geistSans.className} ${geistMono.className} relative min-h-screen bg-[#FDFAF7] dark:bg-black text-zinc-900 dark:text-zinc-100 transition-colors overflow-hidden`}>
+        {/* Decorative background blobs */}
+        <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+          <div className="absolute -top-40 -left-40 w-[600px] h-[600px] rounded-full bg-[#915BD8]/30 blur-3xl dark:bg-[#915BD8]/15" />
+          <div className="absolute -bottom-40 -right-40 w-[550px] h-[550px] rounded-full bg-[#F6FF72]/40 blur-3xl dark:bg-[#F6FF72]/10" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] rounded-full bg-[#915BD8]/15 blur-3xl dark:bg-[#915BD8]/8" />
+          <div className="absolute top-1/4 right-0 w-[300px] h-[300px] rounded-full bg-[#F6FF72]/25 blur-2xl dark:bg-[#F6FF72]/5" />
+        </div>
         <Head>
           <title>Panel Contable - Unergy</title>
         </Head>
 
         <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
-        <main className="lg:pl-64 transition-all duration-300">
+        <main className="relative z-10 lg:pl-64 transition-all duration-300">
           <div className="lg:hidden flex items-center justify-between p-4 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-xl border-b border-white/40 dark:border-zinc-800/50 sticky top-0 z-30">
             <div className="flex items-center gap-2">
-              <div className="bg-blue-600 p-1.5 rounded-xl text-white shadow-md">
+              <div className="bg-[#915BD8] p-1.5 rounded-xl text-white shadow-md">
                 <Zap className="w-4 h-4 fill-current" />
               </div>
               <span className="text-lg font-bold tracking-tight">Unergy</span>
